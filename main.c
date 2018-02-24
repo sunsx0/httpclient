@@ -6,27 +6,6 @@
 #include "http/uri.h"
 #include "http/types.h"
 
-IOBuffer test(char* uri_str) {
-    Uri uri = parse_uri(uri_str, strlen(uri_str));
-    HttpSession session;
-
-    http_send_get(&session, uri, NULL);
-    http_read_response(&session, empty_buffer());
-
-    IOBuffer result = empty_io_buffer();
-    char data[1024];
-    while (session.read_state == READ_STATE_READ_DATA) {
-        ssize_t data_len = http_read_data(&session, data, 1024);
-        if (data_len > 0) {
-            push_buffer_data(&result, data, (size_t)data_len);
-        }
-    }
-
-    free_uri(uri);
-    free_http_session(session);
-    return result;
-}
-
 int main(int argc, char **argv) {
     Uri uri = empty_uri();
     HttpSession session = empty_http_session();
